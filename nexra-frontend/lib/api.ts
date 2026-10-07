@@ -1,6 +1,6 @@
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost/nexra/public/api";
+    "https://worksphere-api-qvnl.onrender.com/api";
 
 type ApiOptions = RequestInit & {
     token?: string | null;
@@ -19,7 +19,7 @@ export async function apiFetch<T>(
             headers: {
                 Accept: "application/json",
                 ...(fetchOptions.body &&
-                    !(fetchOptions.body instanceof FormData)
+                !(fetchOptions.body instanceof FormData)
                     ? {
                         "Content-Type": "application/json",
                     }
