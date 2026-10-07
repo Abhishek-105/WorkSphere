@@ -1,59 +1,245 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚡ WorkSphere
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Employee Daily Work & Project Management Platform
 
-## About Laravel
+A production-ready full-stack workspace for managing **projects, tasks, team activity, and daily work updates** — built with a separate Next.js frontend and Laravel API.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+🌐 **[Live Demo](https://work-sphere-git-main-abhishek-105s-projects.vercel.app/)** · 💻 **[GitHub](https://github.com/Abhishek-105/WorkSphere)**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🎯 The Product
 
-## Learning Laravel
+WorkSphere is built around a simple workplace workflow:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Plan → Assign → Track → Report → Review**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+It gives **Managers** and **Employees** focused workflows for the work they are responsible for.
 
-## Laravel Sponsors
+The goal was to build something closer to a **real internal SaaS product** than a collection of CRUD screens.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ✨ Core Capabilities
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 👨‍💼 Manager
 
-## Contributing
+* 📁 Create and manage projects
+* ✅ Create and assign tasks
+* 👥 Manage team members
+* 📝 Review daily work updates
+* 📊 Monitor project and team activity
+* 📎 Manage project files
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 👨‍💻 Employee
 
-## Code of Conduct
+* 📌 View assigned projects
+* 🎯 Track tasks and deadlines
+* 📝 Submit daily work updates
+* 🚧 Report blockers
+* 📈 Track personal work progress
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🎨 Design System
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The interface follows a **compact enterprise SaaS design system**.
 
-## License
+The design intentionally focuses on:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Hierarchy · Consistency · Density · Clarity**
+
+Rather than making every screen visually heavy, the UI uses a consistent system for:
+
+* Navigation
+* Cards
+* Filters
+* Status indicators
+* Loading states
+* Empty states
+* Forms
+* Actions
+* Responsive layouts
+
+The objective was simple:
+
+> **Make the product feel predictable, focused, and professional.**
+
+---
+
+## 🏗️ Architecture
+
+```text
+┌──────────────────────┐
+│     Next.js App      │
+│  React + TypeScript  │
+└──────────┬───────────┘
+           │
+           │ REST API
+           ▼
+┌──────────────────────┐
+│     Laravel API      │
+│ PHP + Sanctum        │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│      PostgreSQL      │
+└──────────────────────┘
+```
+
+### ☁️ Production
+
+```text
+Next.js  →  Vercel
+Laravel  →  Render
+Database →  PostgreSQL
+```
+
+The frontend and backend are intentionally separated.
+
+**Next.js** owns the application experience, while **Laravel** handles business logic, authentication, authorization, and data through APIs.
+
+---
+
+## 🔐 Authentication
+
+Authentication is handled through **Laravel Sanctum**.
+
+```text
+Login
+  ↓
+Laravel API
+  ↓
+Sanctum Token
+  ↓
+Authenticated Requests
+  ↓
+Role-based Access
+```
+
+Protected resources are available according to the authenticated user's role.
+
+---
+
+## 🧩 Backend Architecture
+
+The backend follows an API-first approach instead of coupling the frontend directly to Laravel's server-rendered views.
+
+Core business entities include:
+
+**Users · Projects · Tasks · Assignments · Daily Updates · Files · Activity Logs**
+
+These relationships represent the actual workflow of a workplace rather than treating every feature as an isolated CRUD module.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer              | Technology                   |
+| ------------------ | ---------------------------- |
+| 🎨 Frontend        | Next.js · React · TypeScript |
+| 💅 Styling         | Tailwind CSS                 |
+| ⚙️ Backend         | Laravel 12 · PHP 8.2         |
+| 🔐 Authentication  | Laravel Sanctum              |
+| 🗄️ Database       | PostgreSQL                   |
+| 🔗 API             | REST                         |
+| ☁️ Deployment      | Vercel · Render              |
+| 📦 Version Control | Git · GitHub                 |
+
+---
+
+## 🧠 Engineering Focus
+
+This project demonstrates practical full-stack engineering across:
+
+* ⚛️ Next.js frontend architecture
+* 🔌 Laravel REST API development
+* 🔐 Authentication & role-based authorization
+* 🗄️ Relational database design
+* 🔄 CRUD and assignment workflows
+* 📎 File management
+* 🔗 API integration
+* 📱 Responsive SaaS UI
+* 🐳 Docker-based deployment
+* ☁️ Production environment configuration
+* 🚀 Vercel + Render deployment
+* 🐘 PostgreSQL production setup
+
+The emphasis was on building a **complete product workflow**, not simply implementing individual features.
+
+---
+
+## 📂 Project Structure
+
+```text
+WorkSphere/
+│
+├── app/                    Laravel application
+├── database/               Migrations & seeders
+├── routes/                 API routes
+├── config/                 Application configuration
+│
+├── nexra-frontend/        Next.js application
+│   ├── app/
+│   ├── components/
+│   ├── context/
+│   ├── lib/
+│   └── types/
+│
+├── Dockerfile
+├── composer.json
+└── package.json
+```
+
+---
+
+## 🚀 Local Setup
+
+### Backend
+
+```text
+cd nexra
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+
+### Frontend
+
+```text
+cd nexra-frontend
+npm install
+npm run dev
+```
+
+Configure the frontend API URL using:
+
+```text
+NEXT_PUBLIC_API_URL
+```
+
+---
+
+## 🌍 Production
+
+**Frontend:** Vercel
+**API:** Render
+**Database:** PostgreSQL
+
+The production application is fully deployed with the frontend communicating with the Laravel API through authenticated requests.
+
+---
+
+## ✅ Status
+
+**🟢 Live · Production Deployed**
+
+WorkSphere represents my approach to building a modern full-stack application — from **database design and API architecture to frontend UX and production deployment**.
+
+---
+
+### ⚡ Built with Laravel × Next.js × PostgreSQL
+
+*Designed to solve a workflow, engineered to behave like a product.*
