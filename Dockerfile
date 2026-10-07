@@ -59,11 +59,7 @@ RUN printf '%s\n' \
 
 RUN printf '%s\n' \
     '#!/bin/sh' \
-    'echo "=== WORKSPHERE DATABASE SETUP ==="' \
     'php artisan migrate --force' \
-    'echo "=== CREATING PRODUCTION MANAGER ==="' \
-    'php artisan db:seed --class=ProductionManagerSeeder --force' \
-    'echo "=== DATABASE SETUP COMPLETE ==="' \
     'exec apache2-foreground' \
     > /usr/local/bin/start-laravel.sh \
     && chmod +x /usr/local/bin/start-laravel.sh
