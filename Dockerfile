@@ -47,6 +47,13 @@ RUN printf '%s\n' \
     '</VirtualHost>' \
     > /etc/apache2/sites-available/000-default.conf
 
+RUN printf '%s\n' \
+    '#!/bin/sh' \
+    'php artisan migrate --force' \
+    'exec apache2-foreground' \
+    > /usr/local/bin/start-laravel.sh \
+    && chmod +x /usr/local/bin/start-laravel.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start-laravel.sh"]
