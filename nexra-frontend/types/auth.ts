@@ -7,6 +7,7 @@ export type User = {
     profile_photo: string | null;
     role: "manager" | "employee";
     status: string;
+    is_demo: boolean;
 };
 
 export type LoginResponse = {

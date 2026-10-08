@@ -25,6 +25,7 @@ type ApiUser = {
     phone?: string | null;
     profile_photo?: string | null;
     status: string;
+    is_demo: boolean;
 };
 
 type AuthContextType = {
@@ -80,6 +81,7 @@ function normalizeUser(
         profile_photo:
             user.profile_photo ?? null,
         status: user.status,
+        is_demo: user.is_demo,
     };
 }
 

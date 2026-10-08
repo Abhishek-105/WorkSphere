@@ -14,6 +14,7 @@ export type ApiProfileUser = {
     phone?: string | null;
     profile_photo?: string | null;
     status: string;
+    is_demo: boolean;
 };
 
 export type ProfileResponse = {

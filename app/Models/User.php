@@ -26,6 +26,7 @@ class User extends Authenticatable
         'designation',
         'profile_photo',
         'status',
+        'is_demo',
     ];
 
     protected $hidden = [
@@ -38,6 +39,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_demo' => 'boolean',
         ];
     }
 
@@ -85,5 +87,10 @@ class User extends Authenticatable
     public function isEmployee(): bool
     {
         return $this->role === 'employee';
+    }
+
+    public function isDemo(): bool
+    {
+        return $this->is_demo === true;
     }
 }

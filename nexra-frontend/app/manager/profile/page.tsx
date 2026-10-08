@@ -213,6 +213,31 @@ function PhoneIcon() {
     );
 }
 
+function LockIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            className="h-4 w-4"
+        >
+            <rect
+                x="5"
+                y="10"
+                width="14"
+                height="10"
+                rx="2"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 10V7a4 4 0 0 1 8 0v3"
+            />
+        </svg>
+    );
+}
+
 export default function ManagerProfilePage() {
     const {
         user,
@@ -221,23 +246,41 @@ export default function ManagerProfilePage() {
         updateUser,
     } = useAuth();
 
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const fileInputRef =
+        useRef<HTMLInputElement | null>(null);
 
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] =
+        useState(false);
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
+    const [name, setName] =
+        useState("");
 
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [email, setEmail] =
+        useState("");
 
-    const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [phone, setPhone] =
+        useState("");
 
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
+    const [password, setPassword] =
+        useState("");
+
+    const [confirmPassword, setConfirmPassword] =
+        useState("");
+
+    const [selectedPhoto, setSelectedPhoto] =
+        useState<File | null>(null);
+
+    const [previewUrl, setPreviewUrl] =
+        useState<string | null>(null);
+
+    const [saving, setSaving] =
+        useState(false);
+
+    const [message, setMessage] =
+        useState("");
+
+    const [error, setError] =
+        useState("");
 
     useEffect(() => {
         if (!user) {
@@ -280,13 +323,22 @@ export default function ManagerProfilePage() {
         );
     }
 
-    const existingPhotoUrl = getProfileImageUrl(user.profile_photo);
-    const displayedPhoto = previewUrl || existingPhotoUrl;
+    const isDemoAccount =
+        user.is_demo === true;
+
+    const existingPhotoUrl =
+        getProfileImageUrl(
+            user.profile_photo
+        );
+
+    const displayedPhoto =
+        previewUrl || existingPhotoUrl;
 
     const handlePhotoChange = (
         event: ChangeEvent<HTMLInputElement>
     ) => {
-        const file = event.target.files?.[0];
+        const file =
+            event.target.files?.[0];
 
         if (!file) {
             return;
@@ -296,13 +348,22 @@ export default function ManagerProfilePage() {
         setMessage("");
 
         if (!file.type.startsWith("image/")) {
-            setError("Please select a valid image file.");
+            setError(
+                "Please select a valid image file."
+            );
+
             event.target.value = "";
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-            setError("Profile image must be smaller than 5 MB.");
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
+            setError(
+                "Profile image must be smaller than 5 MB."
+            );
+
             event.target.value = "";
             return;
         }
@@ -311,7 +372,8 @@ export default function ManagerProfilePage() {
             URL.revokeObjectURL(previewUrl);
         }
 
-        const newPreviewUrl = URL.createObjectURL(file);
+        const newPreviewUrl =
+            URL.createObjectURL(file);
 
         setSelectedPhoto(file);
         setPreviewUrl(newPreviewUrl);
@@ -348,48 +410,88 @@ export default function ManagerProfilePage() {
         }
     };
 
-    const handleSave = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSave = async (
+        event: FormEvent<HTMLFormElement>
+    ) => {
         event.preventDefault();
 
         setError("");
         setMessage("");
 
         if (!name.trim()) {
-            setError("Full name is required.");
+            setError(
+                "Full name is required."
+            );
             return;
         }
 
         if (!email.trim()) {
-            setError("Email is required.");
+            setError(
+                "Email is required."
+            );
             return;
         }
 
-        if (password && password.length < 8) {
-            setError("New password must be at least 8 characters.");
+        if (
+            !isDemoAccount &&
+            password &&
+            password.length < 8
+        ) {
+            setError(
+                "New password must be at least 8 characters."
+            );
             return;
         }
 
-        if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+        if (
+            !isDemoAccount &&
+            password !== confirmPassword
+        ) {
+            setError(
+                "Passwords do not match."
+            );
             return;
         }
 
         if (!token) {
-            setError("Your session has expired. Please log in again.");
+            setError(
+                "Your session has expired. Please log in again."
+            );
             return;
         }
 
         try {
             setSaving(true);
 
-            const formData = new FormData();
+            const formData =
+                new FormData();
 
-            formData.append("name", name.trim());
-            formData.append("email", email.trim());
-            formData.append("phone", phone.trim());
+            formData.append(
+                "name",
+                name.trim()
+            );
 
-            if (password) {
-                formData.append("password", password);
+            formData.append(
+                "email",
+                isDemoAccount
+                    ? user.email
+                    : email.trim()
+            );
+
+            formData.append(
+                "phone",
+                phone.trim()
+            );
+
+            if (
+                !isDemoAccount &&
+                password
+            ) {
+                formData.append(
+                    "password",
+                    password
+                );
+
                 formData.append(
                     "password_confirmation",
                     confirmPassword
@@ -397,22 +499,30 @@ export default function ManagerProfilePage() {
             }
 
             if (selectedPhoto) {
-                formData.append("profile_photo", selectedPhoto);
+                formData.append(
+                    "profile_photo",
+                    selectedPhoto
+                );
             }
 
-            const response = await updateProfile(
-                token,
-                formData
-            );
+            const response =
+                await updateProfile(
+                    token,
+                    formData
+                );
 
-            updateUser(response.user);
+            updateUser(
+                response.user
+            );
 
             setPassword("");
             setConfirmPassword("");
             setSelectedPhoto(null);
 
             if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
+                URL.revokeObjectURL(
+                    previewUrl
+                );
             }
 
             setPreviewUrl(null);
@@ -422,8 +532,10 @@ export default function ManagerProfilePage() {
             }
 
             setEditing(false);
+
             setMessage(
-                response.message || "Profile updated successfully."
+                response.message ||
+                    "Profile updated successfully."
             );
         } catch (err) {
             setError(
@@ -447,7 +559,9 @@ export default function ManagerProfilePage() {
                         Workspace
                     </Link>
 
-                    <span className="text-slate-300">/</span>
+                    <span className="text-slate-300">
+                        /
+                    </span>
 
                     <span className="font-medium text-slate-900">
                         Profile
@@ -508,14 +622,18 @@ export default function ManagerProfilePage() {
                                                     className="h-full w-full object-cover"
                                                 />
                                             ) : (
-                                                getInitials(user.name)
+                                                getInitials(
+                                                    user.name
+                                                )
                                             )}
                                         </div>
 
                                         {editing && (
                                             <button
                                                 type="button"
-                                                onClick={openPhotoPicker}
+                                                onClick={
+                                                    openPhotoPicker
+                                                }
                                                 title="Change profile photo"
                                                 aria-label="Change profile photo"
                                                 className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-slate-950 text-white shadow-lg transition hover:bg-slate-800"
@@ -531,11 +649,15 @@ export default function ManagerProfilePage() {
                                         </h2>
 
                                         <p className="mt-0.5 text-sm text-slate-500">
-                                            {formatRole(user.role)}
+                                            {formatRole(
+                                                user.role
+                                            )}
                                         </p>
 
                                         <span className="mt-2 inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                                            {formatStatus(user.status)}
+                                            {formatStatus(
+                                                user.status
+                                            )}
                                         </span>
                                     </div>
                                 </div>
@@ -544,7 +666,9 @@ export default function ManagerProfilePage() {
                                     <div className="flex flex-col items-start gap-2 sm:items-end">
                                         <button
                                             type="button"
-                                            onClick={openPhotoPicker}
+                                            onClick={
+                                                openPhotoPicker
+                                            }
                                             className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
                                         >
                                             <EditIcon />
@@ -558,15 +682,21 @@ export default function ManagerProfilePage() {
                                         {selectedPhoto && (
                                             <p className="max-w-[260px] truncate text-xs font-medium text-slate-600">
                                                 Selected:{" "}
-                                                {selectedPhoto.name}
+                                                {
+                                                    selectedPhoto.name
+                                                }
                                             </p>
                                         )}
 
                                         <input
-                                            ref={fileInputRef}
+                                            ref={
+                                                fileInputRef
+                                            }
                                             type="file"
                                             accept="image/jpeg,image/png,image/webp"
-                                            onChange={handlePhotoChange}
+                                            onChange={
+                                                handlePhotoChange
+                                            }
                                             className="hidden"
                                         />
                                     </div>
@@ -592,6 +722,25 @@ export default function ManagerProfilePage() {
                                     </div>
                                 </div>
 
+                                {isDemoAccount &&
+                                    editing && (
+                                        <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                                            <LockIcon />
+
+                                            <div>
+                                                <p className="text-xs font-semibold text-amber-900">
+                                                    Demo account
+                                                </p>
+
+                                                <p className="mt-0.5 text-xs leading-5 text-amber-800">
+                                                    Email and password changes
+                                                    are disabled for this demo
+                                                    account.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 <div className="grid gap-5 sm:grid-cols-2">
                                     <div>
                                         <label
@@ -606,9 +755,13 @@ export default function ManagerProfilePage() {
                                                 id="name"
                                                 type="text"
                                                 value={name}
-                                                onChange={(event) =>
+                                                onChange={(
+                                                    event
+                                                ) =>
                                                     setName(
-                                                        event.target.value
+                                                        event
+                                                            .target
+                                                            .value
                                                     )
                                                 }
                                                 className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
@@ -623,9 +776,16 @@ export default function ManagerProfilePage() {
                                     <div>
                                         <label
                                             htmlFor="email"
-                                            className="mb-1.5 block text-xs font-semibold text-slate-600"
+                                            className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-600"
                                         >
                                             Email
+
+                                            {isDemoAccount &&
+                                                editing && (
+                                                    <span className="text-slate-400">
+                                                        <LockIcon />
+                                                    </span>
+                                                )}
                                         </label>
 
                                         {editing ? (
@@ -633,16 +793,28 @@ export default function ManagerProfilePage() {
                                                 id="email"
                                                 type="email"
                                                 value={email}
-                                                onChange={(event) =>
+                                                disabled={
+                                                    isDemoAccount
+                                                }
+                                                onChange={(
+                                                    event
+                                                ) =>
                                                     setEmail(
-                                                        event.target.value
+                                                        event
+                                                            .target
+                                                            .value
                                                     )
                                                 }
-                                                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                className={`h-10 w-full rounded-xl border px-3 text-sm outline-none transition ${
+                                                    isDemoAccount
+                                                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500"
+                                                        : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                }`}
                                             />
                                         ) : (
                                             <div className="flex h-10 items-center gap-2 rounded-xl bg-slate-50 px-3 text-sm font-medium text-slate-900">
                                                 <MailIcon />
+
                                                 <span className="truncate">
                                                     {user.email}
                                                 </span>
@@ -663,9 +835,13 @@ export default function ManagerProfilePage() {
                                                 id="phone"
                                                 type="text"
                                                 value={phone}
-                                                onChange={(event) =>
+                                                onChange={(
+                                                    event
+                                                ) =>
                                                     setPhone(
-                                                        event.target.value
+                                                        event
+                                                            .target
+                                                            .value
                                                     )
                                                 }
                                                 placeholder="Enter phone number"
@@ -674,6 +850,7 @@ export default function ManagerProfilePage() {
                                         ) : (
                                             <div className="flex h-10 items-center gap-2 rounded-xl bg-slate-50 px-3 text-sm font-medium text-slate-900">
                                                 <PhoneIcon />
+
                                                 <span>
                                                     {user.phone ||
                                                         "Not provided"}
@@ -687,44 +864,90 @@ export default function ManagerProfilePage() {
                                             <div>
                                                 <label
                                                     htmlFor="password"
-                                                    className="mb-1.5 block text-xs font-semibold text-slate-600"
+                                                    className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-600"
                                                 >
                                                     New password
+
+                                                    {isDemoAccount && (
+                                                        <span className="text-slate-400">
+                                                            <LockIcon />
+                                                        </span>
+                                                    )}
                                                 </label>
 
                                                 <input
                                                     id="password"
                                                     type="password"
-                                                    value={password}
-                                                    onChange={(event) =>
+                                                    value={
+                                                        password
+                                                    }
+                                                    disabled={
+                                                        isDemoAccount
+                                                    }
+                                                    onChange={(
+                                                        event
+                                                    ) =>
                                                         setPassword(
-                                                            event.target.value
+                                                            event
+                                                                .target
+                                                                .value
                                                         )
                                                     }
-                                                    placeholder="Leave blank to keep current"
-                                                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                    placeholder={
+                                                        isDemoAccount
+                                                            ? "Unavailable for demo"
+                                                            : "Leave blank to keep current"
+                                                    }
+                                                    className={`h-10 w-full rounded-xl border px-3 text-sm outline-none transition ${
+                                                        isDemoAccount
+                                                            ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500 placeholder:text-slate-400"
+                                                            : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                    }`}
                                                 />
                                             </div>
 
                                             <div>
                                                 <label
                                                     htmlFor="confirmPassword"
-                                                    className="mb-1.5 block text-xs font-semibold text-slate-600"
+                                                    className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-600"
                                                 >
                                                     Confirm new password
+
+                                                    {isDemoAccount && (
+                                                        <span className="text-slate-400">
+                                                            <LockIcon />
+                                                        </span>
+                                                    )}
                                                 </label>
 
                                                 <input
                                                     id="confirmPassword"
                                                     type="password"
-                                                    value={confirmPassword}
-                                                    onChange={(event) =>
+                                                    value={
+                                                        confirmPassword
+                                                    }
+                                                    disabled={
+                                                        isDemoAccount
+                                                    }
+                                                    onChange={(
+                                                        event
+                                                    ) =>
                                                         setConfirmPassword(
-                                                            event.target.value
+                                                            event
+                                                                .target
+                                                                .value
                                                         )
                                                     }
-                                                    placeholder="Confirm new password"
-                                                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                    placeholder={
+                                                        isDemoAccount
+                                                            ? "Unavailable for demo"
+                                                            : "Confirm new password"
+                                                    }
+                                                    className={`h-10 w-full rounded-xl border px-3 text-sm outline-none transition ${
+                                                        isDemoAccount
+                                                            ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500 placeholder:text-slate-400"
+                                                            : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                                                    }`}
                                                 />
                                             </div>
                                         </>
@@ -768,7 +991,9 @@ export default function ManagerProfilePage() {
                                         </p>
 
                                         <p className="mt-1 text-sm font-semibold text-slate-900">
-                                            {formatRole(user.role)}
+                                            {formatRole(
+                                                user.role
+                                            )}
                                         </p>
                                     </div>
 
@@ -778,7 +1003,9 @@ export default function ManagerProfilePage() {
                                         </p>
 
                                         <p className="mt-1 text-sm font-semibold text-emerald-700">
-                                            {formatStatus(user.status)}
+                                            {formatStatus(
+                                                user.status
+                                            )}
                                         </p>
                                     </div>
                                 </div>
@@ -789,7 +1016,9 @@ export default function ManagerProfilePage() {
                             <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
                                 <button
                                     type="button"
-                                    onClick={cancelEditing}
+                                    onClick={
+                                        cancelEditing
+                                    }
                                     disabled={saving}
                                     className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
@@ -803,6 +1032,7 @@ export default function ManagerProfilePage() {
                                     className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <CheckIcon />
+
                                     {saving
                                         ? "Saving..."
                                         : "Save changes"}

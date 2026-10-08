@@ -47,6 +47,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'profile_photo' => $user->profile_photo,
                 'status' => $user->status,
+                'is_demo' => $user->is_demo,
             ],
         ]);
     }
@@ -79,6 +80,20 @@ class AuthController extends Controller
                 'max:2048',
             ],
         ]);
+
+        if ($user->isDemo()) {
+            if ($validated['email'] !== $user->email) {
+                return response()->json([
+                    'message' => 'Demo account email cannot be changed.',
+                ], 403);
+            }
+
+            if (!empty($validated['password'])) {
+                return response()->json([
+                    'message' => 'Demo account password cannot be changed.',
+                ], 403);
+            }
+        }
 
         $user->name = $validated['name'];
         $user->phone = $validated['phone'] ?? null;
@@ -115,6 +130,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'profile_photo' => $user->profile_photo,
                 'status' => $user->status,
+                'is_demo' => $user->is_demo,
             ],
         ]);
     }
