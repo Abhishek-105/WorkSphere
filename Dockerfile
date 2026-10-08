@@ -60,6 +60,7 @@ RUN printf '%s\n' \
 RUN printf '%s\n' \
     '#!/bin/sh' \
     'php artisan migrate --force' \
+    'php artisan db:seed --class=DemoAccountsSeeder --force' \
     'php artisan storage:link' \
     'exec apache2-foreground' \
     > /usr/local/bin/start-laravel.sh \
