@@ -7,6 +7,39 @@ type TopNavbarProps = {
     onMenuClick?: () => void;
 };
 
+function getProfileImageUrl(
+    profilePhoto: string | null | undefined
+): string | null {
+    if (!profilePhoto) {
+        return null;
+    }
+
+    if (
+        profilePhoto.startsWith("http://") ||
+        profilePhoto.startsWith("https://")
+    ) {
+        return profilePhoto;
+    }
+
+    const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://worksphere-api-qvnl.onrender.com/api";
+
+    const backendUrl = apiUrl.replace(
+        /\/api\/?$/,
+        ""
+    );
+
+    const cleanPath =
+        profilePhoto.replace(/^\/+/, "");
+
+    if (cleanPath.startsWith("storage/")) {
+        return `${backendUrl}/${cleanPath}`;
+    }
+
+    return `${backendUrl}/storage/${cleanPath}`;
+}
+
 export default function TopNavbar({
     onMenuClick,
 }: TopNavbarProps) {
@@ -39,10 +72,17 @@ export default function TopNavbar({
             .trim()
             .split(/\s+/)
             .slice(0, 2)
-            .map((part) => part.charAt(0))
+            .map((part) =>
+                part.charAt(0)
+            )
             .join("")
             .toUpperCase();
     }
+
+    const profileImageUrl =
+        getProfileImageUrl(
+            user?.profile_photo
+        );
 
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur md:px-6">
@@ -104,16 +144,34 @@ export default function TopNavbar({
 
                             <div
                                 className={[
-                                    "flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm transition",
+                                    "h-9 w-9 overflow-hidden rounded-full shadow-sm transition",
                                     user.role ===
                                     "manager"
                                         ? "bg-blue-600 group-hover:bg-blue-700"
                                         : "bg-[#166534] group-hover:bg-[#14532D]",
                                 ].join(" ")}
                             >
-                                {getInitials(
-                                    user.name ||
-                                        "User"
+                                {profileImageUrl ? (
+                                    <img
+                                        src={
+                                            profileImageUrl
+                                        }
+                                        alt={`${user.name || "User"} profile`}
+                                        className="h-full w-full object-cover"
+                                        onError={(
+                                            event
+                                        ) => {
+                                            event.currentTarget.style.display =
+                                                "none";
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white">
+                                        {getInitials(
+                                            user.name ||
+                                                "User"
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </button>

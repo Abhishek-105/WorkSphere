@@ -2,13 +2,16 @@
 
 import {
     useEffect,
+    useRef,
     useState,
+    type ChangeEvent,
     type FormEvent,
 } from "react";
 
 import Link from "next/link";
 
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../lib/api";
 
 function getInitials(name?: string) {
     if (!name) {
@@ -19,9 +22,7 @@ function getInitials(name?: string) {
         .trim()
         .split(/\s+/)
         .slice(0, 2)
-        .map((part) =>
-            part.charAt(0).toUpperCase()
-        )
+        .map((part) => part.charAt(0).toUpperCase())
         .join("");
 }
 
@@ -30,10 +31,7 @@ function formatRole(role?: string) {
         return "Employee";
     }
 
-    return (
-        role.charAt(0).toUpperCase() +
-        role.slice(1)
-    );
+    return role.charAt(0).toUpperCase() + role.slice(1);
 }
 
 function formatStatus(status?: string) {
@@ -41,10 +39,35 @@ function formatStatus(status?: string) {
         return "Active";
     }
 
-    return (
-        status.charAt(0).toUpperCase() +
-        status.slice(1)
-    );
+    return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function getProfileImageUrl(
+    profilePhoto: string | null | undefined
+): string | null {
+    if (!profilePhoto) {
+        return null;
+    }
+
+    if (
+        profilePhoto.startsWith("http://") ||
+        profilePhoto.startsWith("https://")
+    ) {
+        return profilePhoto;
+    }
+
+    const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "http://127.0.0.1:8000/api";
+
+    const backendUrl = apiUrl.replace(/\/api\/?$/, "");
+    const cleanPath = profilePhoto.replace(/^\/+/, "");
+
+    if (cleanPath.startsWith("storage/")) {
+        return `${backendUrl}/${cleanPath}`;
+    }
+
+    return `${backendUrl}/storage/${cleanPath}`;
 }
 
 function ProfileIcon() {
@@ -111,7 +134,10 @@ function CloseIcon() {
 }
 
 export default function EmployeeProfilePage() {
-    const { user, loading } = useAuth();
+    const { user, loading, updateUser } = useAuth();
+
+    const fileInputRef =
+        useRef<HTMLInputElement | null>(null);
 
     const [editing, setEditing] =
         useState(false);
@@ -121,6 +147,12 @@ export default function EmployeeProfilePage() {
 
     const [phone, setPhone] =
         useState("");
+
+    const [selectedImage, setSelectedImage] =
+        useState<File | null>(null);
+
+    const [previewUrl, setPreviewUrl] =
+        useState<string | null>(null);
 
     const [saving, setSaving] =
         useState(false);
@@ -140,12 +172,19 @@ export default function EmployeeProfilePage() {
         setPhone(user.phone || "");
     }, [user]);
 
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
     if (loading) {
         return (
             <div className="flex min-h-[70vh] items-center justify-center">
                 <div className="text-center">
                     <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-[#166534]" />
-
                     <p className="mt-4 text-sm text-[#6B7770]">
                         Loading profile...
                     </p>
@@ -178,11 +217,15 @@ export default function EmployeeProfilePage() {
         );
     }
 
-    /*
-     * From this point onward TypeScript knows
-     * that currentUser cannot be null.
-     */
     const currentUser = user;
+
+    const currentProfileImage =
+        getProfileImageUrl(
+            currentUser.profile_photo
+        );
+
+    const displayedImage =
+        previewUrl || currentProfileImage;
 
     const initials = getInitials(
         editing
@@ -191,31 +234,74 @@ export default function EmployeeProfilePage() {
     );
 
     function handleEdit() {
-        setName(
-            currentUser.name || ""
-        );
-
-        setPhone(
-            currentUser.phone || ""
-        );
-
+        setName(currentUser.name || "");
+        setPhone(currentUser.phone || "");
+        setSelectedImage(null);
+        setPreviewUrl(null);
         setMessage("");
         setError("");
         setEditing(true);
     }
 
     function handleCancel() {
-        setName(
-            currentUser.name || ""
-        );
+        setName(currentUser.name || "");
+        setPhone(currentUser.phone || "");
+        setSelectedImage(null);
 
-        setPhone(
-            currentUser.phone || ""
-        );
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
 
+        setPreviewUrl(null);
         setMessage("");
         setError("");
         setEditing(false);
+    }
+
+    function handleImageChange(
+        event: ChangeEvent<HTMLInputElement>
+    ) {
+        const file =
+            event.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        setError("");
+        setMessage("");
+
+        if (!file.type.startsWith("image/")) {
+            setError(
+                "Please select a valid image file."
+            );
+
+            event.target.value = "";
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            setError(
+                "Profile image must be 2 MB or smaller."
+            );
+
+            event.target.value = "";
+            return;
+        }
+
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        const nextPreviewUrl =
+            URL.createObjectURL(file);
+
+        setSelectedImage(file);
+        setPreviewUrl(nextPreviewUrl);
+    }
+
+    function openImagePicker() {
+        fileInputRef.current?.click();
     }
 
     async function handleSave(
@@ -232,10 +318,14 @@ export default function EmployeeProfilePage() {
         const trimmedPhone =
             phone.trim();
 
+        const currentEmail =
+            currentUser.email?.trim();
+
         if (!trimmedName) {
             setError(
                 "Full name is required."
             );
+
             return;
         }
 
@@ -243,33 +333,112 @@ export default function EmployeeProfilePage() {
             setError(
                 "Full name must contain at least 2 characters."
             );
+
+            return;
+        }
+
+        if (!currentEmail) {
+            setError(
+                "Your account email is unavailable. Please log in again."
+            );
+
+            return;
+        }
+
+        const token =
+            typeof window !== "undefined"
+                ? localStorage.getItem(
+                      "nexra_token"
+                  )
+                : null;
+
+        if (!token) {
+            setError(
+                "Your session has expired. Please log in again."
+            );
+
             return;
         }
 
         setSaving(true);
 
-        /*
-         * Profile update API will be connected
-         * in the next backend/API step.
-         *
-         * We intentionally do not fake a database
-         * update here.
-         */
+        try {
+            const formData =
+                new FormData();
 
-        await new Promise((resolve) =>
-            setTimeout(resolve, 500)
-        );
+            formData.append(
+                "name",
+                trimmedName
+            );
 
-        setSaving(false);
+            formData.append(
+                "email",
+                currentEmail
+            );
 
-        setMessage(
-            "Profile editing is ready. The save API will be connected next."
-        );
+            formData.append(
+                "phone",
+                trimmedPhone
+            );
+
+            if (selectedImage) {
+                formData.append(
+                    "profile_photo",
+                    selectedImage
+                );
+            }
+
+            const response =
+                (await apiFetch(
+                    "/profile",
+                    {
+                        method: "POST",
+                        token,
+                        body: formData,
+                    }
+                )) as {
+                    message?: string;
+                    user?: typeof currentUser;
+                };
+
+            if (!response.user) {
+                throw new Error(
+                    response.message ||
+                        "Profile update failed."
+                );
+            }
+
+            updateUser(response.user);
+
+            setSelectedImage(null);
+
+            if (previewUrl) {
+                URL.revokeObjectURL(
+                    previewUrl
+                );
+            }
+
+            setPreviewUrl(null);
+
+            setMessage(
+                response.message ||
+                    "Profile updated successfully."
+            );
+
+            setEditing(false);
+        } catch (requestError) {
+            setError(
+                requestError instanceof Error
+                    ? requestError.message
+                    : "Unable to update your profile."
+            );
+        } finally {
+            setSaving(false);
+        }
     }
 
     return (
         <div className="space-y-5">
-            {/* Page Header */}
             <section className="overflow-hidden rounded-2xl bg-[#171A19] shadow-sm">
                 <div className="px-5 py-5 sm:px-6">
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -299,14 +468,27 @@ export default function EmployeeProfilePage() {
                             </p>
                         </div>
 
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#166534] text-base font-bold text-white shadow-lg shadow-black/20">
-                            {initials}
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#166534] shadow-lg shadow-black/20">
+                            {displayedImage ? (
+                                <img
+                                    src={displayedImage}
+                                    alt={`${currentUser.name || "Employee"} profile`}
+                                    className="h-full w-full object-cover"
+                                    onError={(event) => {
+                                        event.currentTarget.style.display =
+                                            "none";
+                                    }}
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center text-base font-bold text-white">
+                                    {initials}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Profile Overview */}
             <section className="rounded-2xl border border-[#E1E7E3] bg-white shadow-sm">
                 <div className="flex flex-col gap-4 border-b border-[#E1E7E3] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div>
@@ -334,8 +516,50 @@ export default function EmployeeProfilePage() {
 
                 <div className="p-5 sm:p-6">
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#ECFDF3] text-2xl font-bold text-[#166534] ring-1 ring-[#BBF7D0]">
-                            {initials}
+                        <div className="relative h-20 w-20 shrink-0">
+                            <div className="h-20 w-20 overflow-hidden rounded-2xl bg-[#ECFDF3] text-2xl font-bold text-[#166534] ring-1 ring-[#BBF7D0]">
+                                {displayedImage ? (
+                                    <img
+                                        src={displayedImage}
+                                        alt={`${currentUser.name || "Employee"} profile`}
+                                        className="h-full w-full object-cover"
+                                        onError={(event) => {
+                                            event.currentTarget.style.display =
+                                                "none";
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                        {initials}
+                                    </div>
+                                )}
+                            </div>
+
+                            {editing && (
+                                <>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/png,image/jpeg,image/jpg,image/webp"
+                                        onChange={
+                                            handleImageChange
+                                        }
+                                        className="hidden"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={
+                                            openImagePicker
+                                        }
+                                        className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#166534] text-white shadow-md transition hover:bg-[#14532D]"
+                                        aria-label="Change profile picture"
+                                        title="Change profile picture"
+                                    >
+                                        <EditIcon />
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         <div className="min-w-0">
@@ -356,12 +580,19 @@ export default function EmployeeProfilePage() {
                                     currentUser.status
                                 )}
                             </div>
+
+                            {editing && (
+                                <p className="mt-3 text-xs text-[#8A958F]">
+                                    Click the pencil icon
+                                    to choose a new
+                                    profile picture.
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Messages */}
             {(message || error) && (
                 <div
                     className={[
@@ -372,9 +603,7 @@ export default function EmployeeProfilePage() {
                     ].join(" ")}
                 >
                     <div className="flex items-center gap-2">
-                        {!error && (
-                            <CheckIcon />
-                        )}
+                        {!error && <CheckIcon />}
 
                         <span>
                             {error || message}
@@ -383,7 +612,6 @@ export default function EmployeeProfilePage() {
                 </div>
             )}
 
-            {/* Personal Information */}
             <section className="rounded-2xl border border-[#E1E7E3] bg-white shadow-sm">
                 <div className="border-b border-[#E1E7E3] px-5 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
@@ -424,7 +652,8 @@ export default function EmployeeProfilePage() {
                                     value={name}
                                     onChange={(event) =>
                                         setName(
-                                            event.target.value
+                                            event.target
+                                                .value
                                         )
                                     }
                                     placeholder="Enter your full name"
@@ -446,7 +675,8 @@ export default function EmployeeProfilePage() {
                                     value={phone}
                                     onChange={(event) =>
                                         setPhone(
-                                            event.target.value
+                                            event.target
+                                                .value
                                         )
                                     }
                                     placeholder="Enter your phone number"
@@ -454,6 +684,12 @@ export default function EmployeeProfilePage() {
                                 />
                             </div>
                         </div>
+
+                        <p className="mt-4 text-xs text-[#8A958F]">
+                            Profile pictures must be PNG,
+                            JPG, JPEG, or WEBP and no larger
+                            than 2 MB.
+                        </p>
 
                         <div className="mt-5 flex flex-col gap-2 border-t border-[#E1E7E3] pt-5 sm:flex-row sm:justify-end">
                             <button
@@ -528,7 +764,6 @@ export default function EmployeeProfilePage() {
                 )}
             </section>
 
-            {/* Work Information */}
             <section className="rounded-2xl border border-[#E1E7E3] bg-white shadow-sm">
                 <div className="border-b border-[#E1E7E3] px-5 py-4 sm:px-6">
                     <h2 className="text-sm font-bold text-[#18201C]">

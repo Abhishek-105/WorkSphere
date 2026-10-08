@@ -12,23 +12,29 @@ export async function apiFetch<T>(
 ): Promise<T> {
     const { token, headers, ...fetchOptions } = options;
 
+    const isFormData =
+        typeof FormData !== "undefined" &&
+        fetchOptions.body instanceof FormData;
+
     const response = await fetch(
         `${API_URL}${endpoint}`,
         {
             ...fetchOptions,
             headers: {
                 Accept: "application/json",
-                ...(fetchOptions.body &&
-                !(fetchOptions.body instanceof FormData)
-                    ? {
+
+                ...(isFormData
+                    ? {}
+                    : {
                         "Content-Type": "application/json",
-                    }
-                    : {}),
+                    }),
+
                 ...(token
                     ? {
                         Authorization: `Bearer ${token}`,
                     }
                     : {}),
+
                 ...headers,
             },
         }
@@ -37,7 +43,14 @@ export async function apiFetch<T>(
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
+        const validationErrors = data?.errors
+            ? Object.values(data.errors)
+                .flat()
+                .join(" ")
+            : "";
+
         throw new Error(
+            validationErrors ||
             data?.message ||
             "Something went wrong while communicating with the API."
         );

@@ -16,32 +16,52 @@ import {
 
 import type { User } from "../types/auth";
 
+type ApiUser = {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    designation?: string | null;
+    phone?: string | null;
+    profile_photo?: string | null;
+    status: string;
+};
+
 type AuthContextType = {
     user: User | null;
     token: string | null;
     loading: boolean;
+
     login: (
         email: string,
         password: string
     ) => Promise<User>;
+
     logout: () => Promise<void>;
+
+    updateUser: (
+        user: ApiUser
+    ) => void;
 };
 
-const AuthContext = createContext<
-    AuthContextType | undefined
->(undefined);
+const AuthContext =
+    createContext<AuthContextType | undefined>(
+        undefined
+    );
 
 const TOKEN_KEY = "nexra_token";
 
-function normalizeUser(user: User): User {
-    const normalizedRole =
-        typeof user.role === "string"
-            ? user.role.trim().toLowerCase()
-            : "";
+function normalizeUser(
+    user: ApiUser
+): User {
+    const role =
+        user.role
+            .trim()
+            .toLowerCase();
 
     if (
-        normalizedRole !== "manager" &&
-        normalizedRole !== "employee"
+        role !== "manager" &&
+        role !== "employee"
     ) {
         throw new Error(
             `Invalid user role: ${user.role}`
@@ -49,8 +69,17 @@ function normalizeUser(user: User): User {
     }
 
     return {
-        ...user,
-        role: normalizedRole,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role,
+        designation:
+            user.designation ?? null,
+        phone:
+            user.phone ?? null,
+        profile_photo:
+            user.profile_photo ?? null,
+        status: user.status,
     };
 }
 
@@ -74,7 +103,9 @@ export function AuthProvider({
         async function restoreAuthentication() {
             try {
                 const storedToken =
-                    localStorage.getItem(TOKEN_KEY);
+                    localStorage.getItem(
+                        TOKEN_KEY
+                    );
 
                 if (!storedToken) {
                     if (mounted) {
@@ -89,7 +120,9 @@ export function AuthProvider({
                 }
 
                 const response =
-                    await getCurrentUser(storedToken);
+                    await getCurrentUser(
+                        storedToken
+                    );
 
                 if (!mounted) {
                     return;
@@ -101,16 +134,19 @@ export function AuthProvider({
                     );
                 }
 
-                const normalizedUser =
-                    normalizeUser(response.user);
-
-                setUser(normalizedUser);
+                setUser(
+                    normalizeUser(
+                        response.user
+                    )
+                );
             } catch {
                 if (!mounted) {
                     return;
                 }
 
-                localStorage.removeItem(TOKEN_KEY);
+                localStorage.removeItem(
+                    TOKEN_KEY
+                );
 
                 setToken(null);
                 setUser(null);
@@ -151,7 +187,9 @@ export function AuthProvider({
         }
 
         const normalizedUser =
-            normalizeUser(response.user);
+            normalizeUser(
+                response.user
+            );
 
         localStorage.setItem(
             TOKEN_KEY,
@@ -165,7 +203,8 @@ export function AuthProvider({
     }
 
     async function logout(): Promise<void> {
-        const currentToken = token;
+        const currentToken =
+            token;
 
         try {
             if (currentToken) {
@@ -174,7 +213,7 @@ export function AuthProvider({
                 );
             }
         } catch {
-            // Clear local authentication even if API logout fails.
+            // Local authentication is cleared even if API logout fails.
         } finally {
             localStorage.removeItem(
                 TOKEN_KEY
@@ -185,6 +224,17 @@ export function AuthProvider({
         }
     }
 
+    function updateUser(
+        apiUser: ApiUser
+    ): void {
+        const normalizedUser =
+            normalizeUser(
+                apiUser
+            );
+
+        setUser(normalizedUser);
+    }
+
     return (
         <AuthContext.Provider
             value={{
@@ -193,6 +243,7 @@ export function AuthProvider({
                 loading,
                 login,
                 logout,
+                updateUser,
             }}
         >
             {children}

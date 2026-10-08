@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+
+import { useParams } from "next/navigation";
+
 import {
     ChangeEvent,
     FormEvent,
     useCallback,
     useEffect,
-    useMemo,
     useState,
 } from "react";
+
 import { apiFetch, API_URL } from "@/lib/api";
 
 type Employee = {
@@ -215,7 +217,10 @@ function priorityClasses(priority?: string | null): string {
     return "bg-slate-100 text-slate-600";
 }
 
-function fileIcon(fileType?: string | null, fileName?: string): string {
+function fileIcon(
+    fileType?: string | null,
+    fileName?: string
+): string {
     const type = (fileType || "").toLowerCase();
     const name = (fileName || "").toLowerCase();
 
@@ -260,7 +265,10 @@ function fileIcon(fileType?: string | null, fileName?: string): string {
     return "FILE";
 }
 
-function fileIconClasses(fileType?: string | null, fileName?: string): string {
+function fileIconClasses(
+    fileType?: string | null,
+    fileName?: string
+): string {
     const label = fileIcon(fileType, fileName);
 
     if (label === "PDF") {
@@ -288,13 +296,14 @@ function fileIconClasses(fileType?: string | null, fileName?: string): string {
 
 export default function ManagerProjectDetailsPage() {
     const params = useParams();
-    const router = useRouter();
 
     const projectId = Array.isArray(params.id)
         ? params.id[0]
         : params.id;
 
-    const [project, setProject] = useState<Project | null>(null);
+    const [project, setProject] =
+        useState<Project | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -357,34 +366,14 @@ export default function ManagerProjectDetailsPage() {
     const tasks = project?.tasks ?? [];
     const files = project?.files ?? [];
 
-    const completedTasks = useMemo(() => {
-        return tasks.filter((task) => {
-            const status = normalizeStatus(task.status);
-
-            return (
-                status === "completed" ||
-                status === "done"
-            );
-        }).length;
-    }, [tasks]);
-
-    const progress = useMemo(() => {
-        if (!tasks.length) {
-            return 0;
-        }
-
-        return Math.round(
-            (completedTasks / tasks.length) * 100
-        );
-    }, [completedTasks, tasks.length]);
-
     const handleFileChange = (
         event: ChangeEvent<HTMLInputElement>
     ) => {
         setUploadError("");
         setUploadSuccess("");
 
-        const file = event.target.files?.[0] ?? null;
+        const file =
+            event.target.files?.[0] ?? null;
 
         if (!file) {
             setSelectedFile(null);
@@ -393,6 +382,7 @@ export default function ManagerProjectDetailsPage() {
 
         if (file.size > 10 * 1024 * 1024) {
             setSelectedFile(null);
+
             setUploadError(
                 "File size must not exceed 10 MB."
             );
@@ -412,15 +402,18 @@ export default function ManagerProjectDetailsPage() {
             ".zip",
         ];
 
-        const lowerName = file.name.toLowerCase();
+        const lowerName =
+            file.name.toLowerCase();
 
-        const isAllowed = allowedExtensions.some(
-            (extension) =>
-                lowerName.endsWith(extension)
-        );
+        const isAllowed =
+            allowedExtensions.some(
+                (extension) =>
+                    lowerName.endsWith(extension)
+            );
 
         if (!isAllowed) {
             setSelectedFile(null);
+
             setUploadError(
                 "Allowed files: PDF, DOC, DOCX, XLSX, PNG, JPG, JPEG and ZIP."
             );
@@ -441,6 +434,7 @@ export default function ManagerProjectDetailsPage() {
             setUploadError(
                 "Please select a file to upload."
             );
+
             return;
         }
 
@@ -453,7 +447,10 @@ export default function ManagerProjectDetailsPage() {
 
             const formData = new FormData();
 
-            formData.append("file", selectedFile);
+            formData.append(
+                "file",
+                selectedFile
+            );
 
             const response =
                 await apiFetch<FileResponse>(
@@ -465,7 +462,8 @@ export default function ManagerProjectDetailsPage() {
                     }
                 );
 
-            const uploadedFile = extractFile(response);
+            const uploadedFile =
+                extractFile(response);
 
             if (uploadedFile) {
                 setProject((current) => {
@@ -486,9 +484,10 @@ export default function ManagerProjectDetailsPage() {
             }
 
             setSelectedFile(null);
+
             setUploadSuccess(
                 response.message ||
-                "File uploaded successfully."
+                    "File uploaded successfully."
             );
 
             const input =
@@ -519,6 +518,7 @@ export default function ManagerProjectDetailsPage() {
             setError(
                 "Your session has expired. Please log in again."
             );
+
             return;
         }
 
@@ -528,37 +528,47 @@ export default function ManagerProjectDetailsPage() {
                 {
                     method: "GET",
                     headers: {
-                        Accept: "application/octet-stream",
-                        Authorization: `Bearer ${token}`,
+                        Accept:
+                            "application/octet-stream",
+                        Authorization:
+                            `Bearer ${token}`,
                     },
                 }
             );
 
             if (!response.ok) {
-                const data = await response
-                    .json()
-                    .catch(() => null);
+                const data =
+                    await response
+                        .json()
+                        .catch(() => null);
 
                 throw new Error(
                     data?.message ||
-                    "Unable to download the file."
+                        "Unable to download the file."
                 );
             }
 
-            const blob = await response.blob();
+            const blob =
+                await response.blob();
 
             const url =
-                window.URL.createObjectURL(blob);
+                window.URL.createObjectURL(
+                    blob
+                );
 
             const anchor =
                 document.createElement("a");
 
             anchor.href = url;
+
             anchor.download =
-                file.file_name || "project-file";
+                file.file_name ||
+                "project-file";
 
             document.body.appendChild(anchor);
+
             anchor.click();
+
             anchor.remove();
 
             window.URL.revokeObjectURL(url);
@@ -574,9 +584,10 @@ export default function ManagerProjectDetailsPage() {
     const handleDeleteFile = async (
         file: ProjectFile
     ) => {
-        const confirmed = window.confirm(
-            `Delete "${file.file_name || "this file"}"? This action cannot be undone.`
-        );
+        const confirmed =
+            window.confirm(
+                `Delete "${file.file_name || "this file"}"? This action cannot be undone.`
+            );
 
         if (!confirmed) {
             return;
@@ -607,15 +618,18 @@ export default function ManagerProjectDetailsPage() {
 
                 return {
                     ...current,
-                    files: (current.files ?? []).filter(
-                        (item) => item.id !== file.id
+                    files: (
+                        current.files ?? []
+                    ).filter(
+                        (item) =>
+                            item.id !== file.id
                     ),
                 };
             });
 
             setUploadSuccess(
                 response.message ||
-                "File deleted successfully."
+                    "File deleted successfully."
             );
         } catch (err) {
             setDeleteError(
@@ -634,9 +648,12 @@ export default function ManagerProjectDetailsPage() {
                 <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="animate-pulse space-y-6">
                         <div className="h-8 w-72 rounded-lg bg-slate-200" />
+
                         <div className="h-40 rounded-3xl bg-white shadow-sm" />
+
                         <div className="grid gap-6 lg:grid-cols-3">
                             <div className="h-64 rounded-3xl bg-white shadow-sm lg:col-span-2" />
+
                             <div className="h-64 rounded-3xl bg-white shadow-sm" />
                         </div>
                     </div>
@@ -677,7 +694,9 @@ export default function ManagerProjectDetailsPage() {
                         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                             <button
                                 type="button"
-                                onClick={() => void loadProject()}
+                                onClick={() =>
+                                    void loadProject()
+                                }
                                 className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                             >
                                 Try Again
@@ -760,6 +779,7 @@ export default function ManagerProjectDetailsPage() {
                                     d="M16.862 3.487a2.25 2.25 0 013.182 3.182L8.25 18.463l-4.5 1.125 1.125-4.5L16.862 3.487z"
                                 />
                             </svg>
+
                             Edit Project
                         </Link>
 
@@ -780,6 +800,7 @@ export default function ManagerProjectDetailsPage() {
                                     d="M12 5v14m-7-7h14"
                                 />
                             </svg>
+
                             New Task
                         </Link>
                     </div>
@@ -813,7 +834,7 @@ export default function ManagerProjectDetailsPage() {
 
                 <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                     <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-6 py-7 text-white sm:px-8">
-                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="flex flex-col gap-6">
                             <div className="max-w-3xl">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span
@@ -839,33 +860,6 @@ export default function ManagerProjectDetailsPage() {
                                 <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
                                     {project.description ||
                                         "No project description has been added yet."}
-                                </p>
-                            </div>
-
-                            <div className="min-w-[220px] rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-300">
-                                        Task Progress
-                                    </span>
-
-                                    <span className="font-bold text-white">
-                                        {progress}%
-                                    </span>
-                                </div>
-
-                                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                                    <div
-                                        className="h-full rounded-full bg-indigo-400 transition-all"
-                                        style={{
-                                            width: `${progress}%`,
-                                        }}
-                                    />
-                                </div>
-
-                                <p className="mt-2 text-xs text-slate-400">
-                                    {completedTasks} of{" "}
-                                    {tasks.length} tasks
-                                    completed
                                 </p>
                             </div>
                         </div>
@@ -1216,6 +1210,7 @@ export default function ManagerProjectDetailsPage() {
                                                 stroke="currentColor"
                                                 strokeWidth="4"
                                             />
+
                                             <path
                                                 className="opacity-75"
                                                 fill="currentColor"
@@ -1371,6 +1366,7 @@ export default function ManagerProjectDetailsPage() {
                                                         stroke="currentColor"
                                                         strokeWidth="4"
                                                     />
+
                                                     <path
                                                         className="opacity-75"
                                                         fill="currentColor"
@@ -1414,6 +1410,7 @@ export default function ManagerProjectDetailsPage() {
                                         strokeLinejoin="round"
                                         d="M7 3h7l5 5v12a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"
                                     />
+
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"

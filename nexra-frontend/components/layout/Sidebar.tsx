@@ -142,6 +142,39 @@ function LogoutIcon() {
     );
 }
 
+function getProfileImageUrl(
+    profilePhoto: string | null | undefined
+): string | null {
+    if (!profilePhoto) {
+        return null;
+    }
+
+    if (
+        profilePhoto.startsWith("http://") ||
+        profilePhoto.startsWith("https://")
+    ) {
+        return profilePhoto;
+    }
+
+    const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://worksphere-api-qvnl.onrender.com/api";
+
+    const backendUrl = apiUrl.replace(
+        /\/api\/?$/,
+        ""
+    );
+
+    const cleanPath =
+        profilePhoto.replace(/^\/+/, "");
+
+    if (cleanPath.startsWith("storage/")) {
+        return `${backendUrl}/${cleanPath}`;
+    }
+
+    return `${backendUrl}/storage/${cleanPath}`;
+}
+
 export default function Sidebar({
     isOpen = false,
     onClose,
@@ -226,6 +259,21 @@ export default function Sidebar({
             ? managerItems
             : employeeItems;
 
+    const profileImageUrl =
+        getProfileImageUrl(
+            user.profile_photo
+        );
+
+    const initials =
+        user.name
+            ?.trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) =>
+                part.charAt(0).toUpperCase()
+            )
+            .join("") || "U";
+
     function navigateTo(href: string) {
         if (pathname === href) {
             onClose?.();
@@ -294,23 +342,27 @@ export default function Sidebar({
                     <div className="flex items-center gap-3">
                         <div
                             className={[
-                                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white",
+                                "h-10 w-10 shrink-0 overflow-hidden rounded-xl",
                                 userRole === "manager"
                                     ? "bg-blue-600/80"
                                     : "bg-[#166534]",
                             ].join(" ")}
                         >
-                            {user.name
-                                ?.trim()
-                                .split(/\s+/)
-                                .slice(0, 2)
-                                .map(
-                                    (part) =>
-                                        part
-                                            .charAt(0)
-                                            .toUpperCase()
-                                )
-                                .join("") || "U"}
+                            {profileImageUrl ? (
+                                <img
+                                    src={profileImageUrl}
+                                    alt={`${user.name || "User"} profile`}
+                                    className="h-full w-full object-cover"
+                                    onError={(event) => {
+                                        event.currentTarget.style.display =
+                                            "none";
+                                    }}
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                                    {initials}
+                                </div>
+                            )}
                         </div>
 
                         <div className="min-w-0">
