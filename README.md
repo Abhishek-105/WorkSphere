@@ -1,159 +1,228 @@
 # 🚀 WorkSphere
 
-### Employee Daily Work & Project Management Platform
+> Employee daily work and project management platform designed to manage teams, projects, tasks, assignments, and daily work updates through role-based Manager and Employee workflows.
 
-WorkSphere is a full-stack internal workspace for managing **employees, projects, tasks, assignments, and daily work updates**.
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-Frontend-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Laravel-Backend-red?style=for-the-badge&logo=laravel" alt="Laravel" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status" />
+</p>
 
-It is built as a production-style SaaS application with a separate **Next.js frontend, Laravel REST API, PostgreSQL database, authentication, role-based access, file management, and cloud deployment**.
+<p align="center">
+  <a href="#-live-demo">Live Demo</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-getting-started">Getting Started</a>
+</p>
 
 ---
 
-## 🌐 Live
+## 📖 Overview
 
-**Frontend:** YOUR_VERCEL_URL
+**WorkSphere** is a production-style full-stack workspace built around a realistic company workflow.
 
-**Backend:** https://worksphere-api-qvnl.onrender.com
+Managers can create projects, manage employees, assign tasks, and review daily work updates. Employees can view their assignments, complete tasks, submit daily updates, report blockers, and manage their profiles.
 
-**GitHub:** https://github.com/Abhishek-105/WorkSphere
+The application uses a separate **Next.js frontend** and **Laravel REST API**, with **Sanctum authentication, role-based authorization, relational database design, file management, and cloud deployment**.
 
----
+## 🔗 Live Demo
+
+* **App:** [work-sphere-pi-taupe.vercel.app](https://work-sphere-pi-taupe.vercel.app/)
+
+> 🔐 Demo accounts are available for testing both Manager and Employee workflows.
 
 ## 🔐 Demo Access
-
-Public registration is intentionally disabled because WorkSphere represents an internal company platform.
 
 | Role           | Email                          | Password      |
 | -------------- | ------------------------------ | ------------- |
 | 👨‍💼 Manager  | `demo.manager@worksphere.com`  | `Demo@123456` |
 | 👨‍💻 Employee | `demo.employee@worksphere.com` | `Demo@123456` |
 
-Demo credentials are protected so visitors can safely share the same accounts.
+> Public registration is intentionally disabled because WorkSphere represents an internal company workspace.
 
----
+## ✨ Features
 
-## 💼 How It Works
+* 🔐 **Authentication & Authorization** — Laravel Sanctum authentication with role-based Manager and Employee access
+* 👥 **Team Management** — Manage employees, roles, designations, status, and assignments
+* 📁 **Project Management** — Create, update, track, and manage projects with assigned employees
+* 📋 **Task Management** — Create tasks, assign employees, manage deadlines, and track progress
+* 📝 **Daily Work Updates** — Employees submit work summaries, hours, blockers, and next-day plans
+* 🔎 **Manager Review Workflow** — Managers can review employee daily updates and identify blockers
+* 📎 **File Management** — Upload and manage project and work-related files
+* 👤 **Profile Management** — Users can update their profile information and profile photo
+* 📊 **Role-Based Dashboards** — Separate dashboards and workflows for Managers and Employees
+* 📱 **Responsive SaaS UI** — Compact enterprise interface designed for desktop and mobile
+* 🛡️ **Protected Demo Accounts** — Shared demo accounts cannot change their login credentials
 
-```text
-👨‍💼 Manager
-   │
-   ├── 📁 Creates Projects
-   ├── 📋 Creates Tasks
-   └── 👥 Assigns Employees
-              │
-              ▼
-        👨‍💻 Employee
-              │
-              ├── 🛠️ Completes Work
-              └── 📝 Submits Daily Update
-                         │
-                         ▼
-                    👨‍💼 Manager
-                         │
-                      🔎 Reviews
-```
+## 🛠️ Tech Stack
 
-The application provides different workflows and permissions for **Managers** and **Employees**.
+**Frontend**
 
----
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
 
-## ✨ Key Features
+**Backend**
 
-* 🔐 Sanctum authentication & role-based authorization
-* 👥 Employee and team management
-* 📁 Project management & employee assignments
-* 📋 Task management & deadlines
-* 📝 Daily work updates, hours & blockers
-* 📎 Project and update file uploads
-* 👤 Profile management & profile photos
-* 📊 Manager and employee dashboards
-* 📱 Responsive enterprise SaaS interface
-* 🛡️ Protected demo accounts
+* Laravel 12
+* PHP 8.2
+* Laravel Sanctum
+* Eloquent ORM
+* REST API
 
----
+**Database**
+
+* PostgreSQL
+
+**Deployment**
+
+* Vercel
+* Render
+* Docker
+
+**Tools**
+
+* Git
+* GitHub
 
 ## 🏗️ Architecture
 
 ```text
 Next.js + React + TypeScript
             │
-         REST API
+            │ REST API
             ▼
-   Laravel 12 + Sanctum
+    Laravel 12 + Sanctum
             │
-        Eloquent ORM
+            │ Eloquent ORM
             ▼
-       PostgreSQL
+        PostgreSQL
 ```
 
-**Frontend:** UI, navigation, state & API integration
-
-**Backend:** Authentication, authorization, validation & business logic
-
-**Database:** Users, projects, tasks, assignments, updates & files
-
----
-
-## 🛠️ Tech Stack
-
-| Layer      | Technologies                             |
-| ---------- | ---------------------------------------- |
-| Frontend   | Next.js, React, TypeScript, Tailwind CSS |
-| Backend    | Laravel 12, PHP 8.2, Sanctum             |
-| Database   | PostgreSQL                               |
-| Deployment | Vercel, Render, Docker                   |
-| Tools      | Git, GitHub                              |
-
----
-
-## 🚀 Run Locally
-
-### Backend
+### Application Flow
 
 ```text
+👨‍💼 Manager
+     │
+     ├── 📁 Creates Projects
+     ├── 📋 Creates Tasks
+     └── 👥 Assigns Employees
+                │
+                ▼
+          👨‍💻 Employee
+                │
+                ├── 🛠️ Completes Work
+                └── 📝 Submits Daily Update
+                           │
+                           ▼
+                      👨‍💼 Manager
+                           │
+                        🔎 Reviews
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* PHP 8.2+
+* Composer
+* Node.js 18+
+* PostgreSQL
+* Git
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/Abhishek-105/WorkSphere.git
 cd WorkSphere
+```
 
+### 2. Backend Setup
+
+```bash
 composer install
 copy .env.example .env
 php artisan key:generate
 php artisan migrate
+php artisan storage:link
 php artisan serve
 ```
 
-### Frontend
+Configure your database and application settings in `.env`.
+
+The Laravel API will run at:
 
 ```text
+http://127.0.0.1:8000
+```
+
+### 3. Frontend Setup
+
+```bash
 cd nexra-frontend
 npm install
 npm run dev
 ```
 
-Create `nexra-frontend/.env.local`:
+Create `.env.local`:
 
 ```text
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
 ```
 
-**Frontend:** `http://localhost:3000`
+The Next.js application will run at:
 
-**Backend:** `http://127.0.0.1:8000`
+```text
+http://localhost:3000
+```
 
----
+## 📂 Project Structure
+
+```text
+WorkSphere/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   └── Models/
+│
+├── database/
+│   └── migrations/
+│
+├── routes/
+│   ├── api.php
+│   └── web.php
+│
+├── nexra-frontend/
+│   ├── app/
+│   │   ├── manager/
+│   │   └── employee/
+│   ├── components/
+│   ├── context/
+│   └── lib/
+│
+├── Dockerfile
+└── README.md
+```
 
 ## 🎯 What This Project Demonstrates
 
 WorkSphere demonstrates practical full-stack development across:
 
-**Architecture → Database Design → REST APIs → Authentication → Authorization → Frontend Integration → File Handling → Responsive UI → Docker → Production Deployment**
+**System Architecture → Database Design → REST APIs → Authentication → Authorization → CRUD → Role-Based Workflows → File Handling → Frontend Integration → Responsive UI → Docker → Cloud Deployment**
 
-The goal was to build a realistic business application rather than another isolated CRUD project.
+The project was built to simulate a **real internal business application**, rather than a simple CRUD demonstration.
 
----
-
-## 👨‍💻 Author
+## 👤 Author
 
 **Abhishek Kumar**
 
 Full-Stack Developer
 
 [GitHub](https://github.com/Abhishek-105)
+
+---
+
+<p align="center">Built with ❤️ using Next.js, Laravel & PostgreSQL</p>
