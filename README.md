@@ -11,7 +11,9 @@ It is built as a production-style SaaS application with a separate **Next.js fro
 ## 🌐 Live
 
 **Frontend:** YOUR_VERCEL_URL
+
 **Backend:** https://worksphere-api-qvnl.onrender.com
+
 **GitHub:** https://github.com/Abhishek-105/WorkSphere
 
 ---
@@ -84,8 +86,10 @@ Next.js + React + TypeScript
 ```
 
 **Frontend:** UI, navigation, state & API integration
-**Backend:** authentication, authorization, validation & business logic
-**Database:** users, projects, tasks, assignments, updates & files
+
+**Backend:** Authentication, authorization, validation & business logic
+
+**Database:** Users, projects, tasks, assignments, updates & files
 
 ---
 
@@ -130,8 +134,9 @@ Create `nexra-frontend/.env.local`:
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
 ```
 
-Frontend: `http://localhost:3000`
-Backend: `http://127.0.0.1:8000`
+**Frontend:** `http://localhost:3000`
+
+**Backend:** `http://127.0.0.1:8000`
 
 ---
 
@@ -147,7 +152,8 @@ The goal was to build a realistic business application rather than another isola
 
 ## 👨‍💻 Author
 
-**Abhishek Singh**
+**Abhishek Kumar**
+
 Full-Stack Developer
 
 [GitHub](https://github.com/Abhishek-105)
