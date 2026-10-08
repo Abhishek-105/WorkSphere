@@ -1,98 +1,153 @@
-# WorkSphere
+# 🚀 WorkSphere
 
 ### Employee Daily Work & Project Management Platform
 
-WorkSphere is a full-stack internal workspace designed to help companies manage employees, projects, tasks, assignments, and daily work updates from one platform.
+WorkSphere is a full-stack internal workspace for managing **employees, projects, tasks, assignments, and daily work updates**.
 
-The project was built to simulate a real-world business application with a separate frontend, REST API, authentication, role-based access, relational data, file management, and production deployment.
+It is built as a production-style SaaS application with a separate **Next.js frontend, Laravel REST API, PostgreSQL database, authentication, role-based access, file management, and cloud deployment**.
 
 ---
 
-## 🌐 Live Application
+## 🌐 Live
 
 **Frontend:** YOUR_VERCEL_URL
-
-**Backend API:** https://worksphere-api-qvnl.onrender.com
-
+**Backend:** https://worksphere-api-qvnl.onrender.com
 **GitHub:** https://github.com/Abhishek-105/WorkSphere
 
 ---
 
 ## 🔐 Demo Access
 
-WorkSphere does not provide public registration because it represents an internal company workspace.
+Public registration is intentionally disabled because WorkSphere represents an internal company platform.
 
-Instead, dedicated demo accounts are available so anyone can safely explore the application.
+| Role           | Email                          | Password      |
+| -------------- | ------------------------------ | ------------- |
+| 👨‍💼 Manager  | `demo.manager@worksphere.com`  | `Demo@123456` |
+| 👨‍💻 Employee | `demo.employee@worksphere.com` | `Demo@123456` |
 
-| Role | Email | Password |
-|---|---|---|
-| Manager | `demo.manager@worksphere.com` | `Demo@123456` |
-| Employee | `demo.employee@worksphere.com` | `Demo@123456` |
-
-### Demo account protection
-
-The demo accounts are intentionally restricted from changing their shared email address or password.
-
-This allows multiple people to explore the same demo environment without breaking access for other visitors.
+Demo credentials are protected so visitors can safely share the same accounts.
 
 ---
 
-## 💡 What Is WorkSphere?
+## 💼 How It Works
 
-WorkSphere connects managers and employees through a structured daily-work workflow.
+```text
+👨‍💼 Manager
+   │
+   ├── 📁 Creates Projects
+   ├── 📋 Creates Tasks
+   └── 👥 Assigns Employees
+              │
+              ▼
+        👨‍💻 Employee
+              │
+              ├── 🛠️ Completes Work
+              └── 📝 Submits Daily Update
+                         │
+                         ▼
+                    👨‍💼 Manager
+                         │
+                      🔎 Reviews
+```
 
-### Manager
+The application provides different workflows and permissions for **Managers** and **Employees**.
 
-A manager can:
+---
 
-- Create and manage projects
-- Create and manage tasks
-- Manage employees
-- Assign employees to projects
-- Assign tasks
-- Review daily work updates
-- View project information
-- Manage project files
-- Manage their own profile
+## ✨ Key Features
 
-### Employee
-
-An employee can:
-
-- View assigned projects
-- View assigned tasks
-- Submit daily work updates
-- Track previous work
-- View project information
-- Upload a profile photo
-- Manage their own profile
-
-The application keeps these workflows separate through role-based access control.
+* 🔐 Sanctum authentication & role-based authorization
+* 👥 Employee and team management
+* 📁 Project management & employee assignments
+* 📋 Task management & deadlines
+* 📝 Daily work updates, hours & blockers
+* 📎 Project and update file uploads
+* 👤 Profile management & profile photos
+* 📊 Manager and employee dashboards
+* 📱 Responsive enterprise SaaS interface
+* 🛡️ Protected demo accounts
 
 ---
 
 ## 🏗️ Architecture
 
-WorkSphere follows a separated frontend and backend architecture.
+```text
+Next.js + React + TypeScript
+            │
+         REST API
+            ▼
+   Laravel 12 + Sanctum
+            │
+        Eloquent ORM
+            ▼
+       PostgreSQL
+```
+
+**Frontend:** UI, navigation, state & API integration
+**Backend:** authentication, authorization, validation & business logic
+**Database:** users, projects, tasks, assignments, updates & files
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer      | Technologies                             |
+| ---------- | ---------------------------------------- |
+| Frontend   | Next.js, React, TypeScript, Tailwind CSS |
+| Backend    | Laravel 12, PHP 8.2, Sanctum             |
+| Database   | PostgreSQL                               |
+| Deployment | Vercel, Render, Docker                   |
+| Tools      | Git, GitHub                              |
+
+---
+
+## 🚀 Run Locally
+
+### Backend
 
 ```text
-                    WorkSphere
+git clone https://github.com/Abhishek-105/WorkSphere.git
+cd WorkSphere
 
-              ┌─────────────────┐
-              │   Next.js App   │
-              │    Frontend     │
-              └────────┬────────┘
-                       │
-                       │ REST API
-                       ▼
-              ┌─────────────────┐
-              │ Laravel Backend │
-              │   API Layer     │
-              └────────┬────────┘
-                       │
-                       │ Eloquent
-                       ▼
-              ┌─────────────────┐
-              │   PostgreSQL    │
-              │    Database     │
-              └─────────────────┘
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+
+### Frontend
+
+```text
+cd nexra-frontend
+npm install
+npm run dev
+```
+
+Create `nexra-frontend/.env.local`:
+
+```text
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+```
+
+Frontend: `http://localhost:3000`
+Backend: `http://127.0.0.1:8000`
+
+---
+
+## 🎯 What This Project Demonstrates
+
+WorkSphere demonstrates practical full-stack development across:
+
+**Architecture → Database Design → REST APIs → Authentication → Authorization → Frontend Integration → File Handling → Responsive UI → Docker → Production Deployment**
+
+The goal was to build a realistic business application rather than another isolated CRUD project.
+
+---
+
+## 👨‍💻 Author
+
+**Abhishek Singh**
+Full-Stack Developer
+
+[GitHub](https://github.com/Abhishek-105)
