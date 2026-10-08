@@ -1,245 +1,98 @@
-# ⚡ WorkSphere
+# WorkSphere
 
 ### Employee Daily Work & Project Management Platform
 
-A production-ready full-stack workspace for managing **projects, tasks, team activity, and daily work updates** — built with a separate Next.js frontend and Laravel API.
+WorkSphere is a full-stack internal workspace designed to help companies manage employees, projects, tasks, assignments, and daily work updates from one platform.
 
-🌐 **[Live Demo](https://work-sphere-git-main-abhishek-105s-projects.vercel.app/)** · 💻 **[GitHub](https://github.com/Abhishek-105/WorkSphere)**
-
----
-
-## 🎯 The Product
-
-WorkSphere is built around a simple workplace workflow:
-
-**Plan → Assign → Track → Report → Review**
-
-It gives **Managers** and **Employees** focused workflows for the work they are responsible for.
-
-The goal was to build something closer to a **real internal SaaS product** than a collection of CRUD screens.
+The project was built to simulate a real-world business application with a separate frontend, REST API, authentication, role-based access, relational data, file management, and production deployment.
 
 ---
 
-## ✨ Core Capabilities
+## 🌐 Live Application
 
-### 👨‍💼 Manager
+**Frontend:** YOUR_VERCEL_URL
 
-* 📁 Create and manage projects
-* ✅ Create and assign tasks
-* 👥 Manage team members
-* 📝 Review daily work updates
-* 📊 Monitor project and team activity
-* 📎 Manage project files
+**Backend API:** https://worksphere-api-qvnl.onrender.com
 
-### 👨‍💻 Employee
-
-* 📌 View assigned projects
-* 🎯 Track tasks and deadlines
-* 📝 Submit daily work updates
-* 🚧 Report blockers
-* 📈 Track personal work progress
+**GitHub:** https://github.com/Abhishek-105/WorkSphere
 
 ---
 
-## 🎨 Design System
+## 🔐 Demo Access
 
-The interface follows a **compact enterprise SaaS design system**.
+WorkSphere does not provide public registration because it represents an internal company workspace.
 
-The design intentionally focuses on:
+Instead, dedicated demo accounts are available so anyone can safely explore the application.
 
-**Hierarchy · Consistency · Density · Clarity**
+| Role | Email | Password |
+|---|---|---|
+| Manager | `demo.manager@worksphere.com` | `Demo@123456` |
+| Employee | `demo.employee@worksphere.com` | `Demo@123456` |
 
-Rather than making every screen visually heavy, the UI uses a consistent system for:
+### Demo account protection
 
-* Navigation
-* Cards
-* Filters
-* Status indicators
-* Loading states
-* Empty states
-* Forms
-* Actions
-* Responsive layouts
+The demo accounts are intentionally restricted from changing their shared email address or password.
 
-The objective was simple:
+This allows multiple people to explore the same demo environment without breaking access for other visitors.
 
-> **Make the product feel predictable, focused, and professional.**
+---
+
+## 💡 What Is WorkSphere?
+
+WorkSphere connects managers and employees through a structured daily-work workflow.
+
+### Manager
+
+A manager can:
+
+- Create and manage projects
+- Create and manage tasks
+- Manage employees
+- Assign employees to projects
+- Assign tasks
+- Review daily work updates
+- View project information
+- Manage project files
+- Manage their own profile
+
+### Employee
+
+An employee can:
+
+- View assigned projects
+- View assigned tasks
+- Submit daily work updates
+- Track previous work
+- View project information
+- Upload a profile photo
+- Manage their own profile
+
+The application keeps these workflows separate through role-based access control.
 
 ---
 
 ## 🏗️ Architecture
 
-```text
-┌──────────────────────┐
-│     Next.js App      │
-│  React + TypeScript  │
-└──────────┬───────────┘
-           │
-           │ REST API
-           ▼
-┌──────────────────────┐
-│     Laravel API      │
-│ PHP + Sanctum        │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│      PostgreSQL      │
-└──────────────────────┘
-```
-
-### ☁️ Production
+WorkSphere follows a separated frontend and backend architecture.
 
 ```text
-Next.js  →  Vercel
-Laravel  →  Render
-Database →  PostgreSQL
-```
+                    WorkSphere
 
-The frontend and backend are intentionally separated.
-
-**Next.js** owns the application experience, while **Laravel** handles business logic, authentication, authorization, and data through APIs.
-
----
-
-## 🔐 Authentication
-
-Authentication is handled through **Laravel Sanctum**.
-
-```text
-Login
-  ↓
-Laravel API
-  ↓
-Sanctum Token
-  ↓
-Authenticated Requests
-  ↓
-Role-based Access
-```
-
-Protected resources are available according to the authenticated user's role.
-
----
-
-## 🧩 Backend Architecture
-
-The backend follows an API-first approach instead of coupling the frontend directly to Laravel's server-rendered views.
-
-Core business entities include:
-
-**Users · Projects · Tasks · Assignments · Daily Updates · Files · Activity Logs**
-
-These relationships represent the actual workflow of a workplace rather than treating every feature as an isolated CRUD module.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer              | Technology                   |
-| ------------------ | ---------------------------- |
-| 🎨 Frontend        | Next.js · React · TypeScript |
-| 💅 Styling         | Tailwind CSS                 |
-| ⚙️ Backend         | Laravel 12 · PHP 8.2         |
-| 🔐 Authentication  | Laravel Sanctum              |
-| 🗄️ Database       | PostgreSQL                   |
-| 🔗 API             | REST                         |
-| ☁️ Deployment      | Vercel · Render              |
-| 📦 Version Control | Git · GitHub                 |
-
----
-
-## 🧠 Engineering Focus
-
-This project demonstrates practical full-stack engineering across:
-
-* ⚛️ Next.js frontend architecture
-* 🔌 Laravel REST API development
-* 🔐 Authentication & role-based authorization
-* 🗄️ Relational database design
-* 🔄 CRUD and assignment workflows
-* 📎 File management
-* 🔗 API integration
-* 📱 Responsive SaaS UI
-* 🐳 Docker-based deployment
-* ☁️ Production environment configuration
-* 🚀 Vercel + Render deployment
-* 🐘 PostgreSQL production setup
-
-The emphasis was on building a **complete product workflow**, not simply implementing individual features.
-
----
-
-## 📂 Project Structure
-
-```text
-WorkSphere/
-│
-├── app/                    Laravel application
-├── database/               Migrations & seeders
-├── routes/                 API routes
-├── config/                 Application configuration
-│
-├── nexra-frontend/        Next.js application
-│   ├── app/
-│   ├── components/
-│   ├── context/
-│   ├── lib/
-│   └── types/
-│
-├── Dockerfile
-├── composer.json
-└── package.json
-```
-
----
-
-## 🚀 Local Setup
-
-### Backend
-
-```text
-cd nexra
-composer install
-php artisan key:generate
-php artisan migrate
-php artisan serve
-```
-
-### Frontend
-
-```text
-cd nexra-frontend
-npm install
-npm run dev
-```
-
-Configure the frontend API URL using:
-
-```text
-NEXT_PUBLIC_API_URL
-```
-
----
-
-## 🌍 Production
-
-**Frontend:** Vercel
-**API:** Render
-**Database:** PostgreSQL
-
-The production application is fully deployed with the frontend communicating with the Laravel API through authenticated requests.
-
----
-
-## ✅ Status
-
-**🟢 Live · Production Deployed**
-
-WorkSphere represents my approach to building a modern full-stack application — from **database design and API architecture to frontend UX and production deployment**.
-
----
-
-### ⚡ Built with Laravel × Next.js × PostgreSQL
-
-*Designed to solve a workflow, engineered to behave like a product.*
+              ┌─────────────────┐
+              │   Next.js App   │
+              │    Frontend     │
+              └────────┬────────┘
+                       │
+                       │ REST API
+                       ▼
+              ┌─────────────────┐
+              │ Laravel Backend │
+              │   API Layer     │
+              └────────┬────────┘
+                       │
+                       │ Eloquent
+                       ▼
+              ┌─────────────────┐
+              │   PostgreSQL    │
+              │    Database     │
+              └─────────────────┘
